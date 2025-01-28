@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "fabuka-rider",
+    "slug": "fabuka-rider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "googleMapsApiKey": "AIzaSyAL3JMBwU_ROOFvRKZr7YjIt815PGxQR7s",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to show the map.",
+        "NSLocationAlwaysUsageDescription": "This app needs access to location to show the map."
+      },
+      "bundleIdentifier": "com.fastbuka.rider"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "googleMapsApiKey": "AIzaSyAL3JMBwU_ROOFvRKZr7YjIt815PGxQR7s",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.fastbuka.rider"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "76952499-a2ed-4535-a258-a9a6061f5820"
+      }
+    },
+    "owner": "emekaorjiani"
+  }
+}
