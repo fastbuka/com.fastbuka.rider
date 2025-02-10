@@ -8,6 +8,22 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrdersStore } from '@/store/ordersStore';
+import { apiClient } from '@/services/api'; // Import the apiClient if needed
+
+// Function to fetch rider orders
+const fetchRiderOrders = async (longitude: number, latitude: number) => {
+  try {
+    const response = await apiClient.get('/rider', {
+      params: { longitude, latitude },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch orders', error);
+    throw error;
+  }
+};
+
+// Add other API functions as needed...
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

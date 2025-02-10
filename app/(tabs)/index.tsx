@@ -1,10 +1,12 @@
 import { Image, StyleSheet, Platform, View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week'>('today');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Mock user data - replace with real data
   const userData = {
@@ -36,6 +38,25 @@ export default function Dashboard() {
       ]
     }
   };
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        if (token) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch the auth token from storage', error);
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (!isLoggedIn) {
+    return <Text>Please log in</Text>;
+  }
 
   // Get greeting based on time of day
   const getGreeting = () => {
