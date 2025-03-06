@@ -160,13 +160,22 @@ export const getRiderOrders = async (longitude: number, latitude: number) => {
   }
 };
 
-
 export const acceptOrder = async (orderUuid: string) => {
   try {
     const response = await apiClient.post(`/rider/accept_order/${orderUuid}`);
     return response.data;
   } catch (error) {
     console.error('Accept order failed', error);
+    throw error;
+  }
+};
+
+export const deliverOrder = async (orderUuid: string) => {
+  try {
+    const response = await apiClient.post(`/rider/deliver_order/${orderUuid}`);
+    return response.data;
+  } catch (error) {
+    console.error('Deliver order failed', error);
     throw error;
   }
 };
