@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions, Platform, ScrollView, LogBox, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions, Platform, ScrollView, LogBox, Modal, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import PrivacyPolicy from '@/app/(tabs)/profile/privacy-policy';
+import { register } from '@/services/api'; // Import the register function from the API service
 
 LogBox.ignoreLogs([
   'Warning: CountryModal:',
@@ -133,10 +134,24 @@ const Signup = () => {
     return isValid;
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (validateForm()) {
-      // Proceed with signup
-      console.log('Form is valid, proceeding with signup');
+      try {
+        const userData = {
+          email,
+          password,
+          phoneNumber,
+          firstName,
+          lastName,
+          birthday: birthday.toISOString(),
+          referralCode,
+        };
+        await register(userData);
+        Alert.alert('Registration Successful', 'Please check your email to verify your account.');
+        router.replace('/login');
+      } catch (error) {
+        Alert.alert('Registration Failed', 'Please try again later.');
+      }
     }
   };
 
@@ -348,6 +363,7 @@ const Signup = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -380,7 +396,7 @@ const styles = StyleSheet.create({
     color: '#22c55e',
     marginBottom: 20,
   },
-   scrollContainer: {
+  scrollContainer: {
     flex: 1,
     paddingHorizontal: 10,
     marginBottom: 30,

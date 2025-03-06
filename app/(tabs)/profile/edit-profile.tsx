@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/context/AuthContext';
 
 export default function EditProfileScreen() {
+  const { userFirstName, userLastName, email } = useAuth();
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    first_name: userFirstName,
+    last_name: userLastName,
+    email: email,
     phone: '+1 234 567 8900',
     bio: 'Food enthusiast and regular customer',
   });
@@ -13,11 +16,20 @@ export default function EditProfileScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Full Name</Text>
+        <Text style={styles.label}>First Name</Text>
         <TextInput
           style={styles.input}
-          value={formData.name}
-          onChangeText={(text) => setFormData({ ...formData, name: text })}
+          value={formData.first_name}
+          onChangeText={(text) => setFormData({ ...formData, first_name: text })}
+        />
+      </View>
+
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Last Name</Text>
+        <TextInput
+          style={styles.input}
+          value={formData.last_name}
+          onChangeText={(text) => setFormData({ ...formData, last_name: text })}
         />
       </View>
 

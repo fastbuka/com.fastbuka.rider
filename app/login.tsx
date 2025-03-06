@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { login } from '../services/api'; // Import the login function from the API service
+import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -13,6 +13,7 @@ const Login = () => {
     password: ''
   });
   const router = useRouter();
+  const { signIn } = useAuth();
 
   const screenHeight = Dimensions.get('window').height;
 
@@ -47,7 +48,7 @@ const Login = () => {
   const handleSignIn = async () => {
     if (validateForm()) {
       try {
-        await login(email, password);
+        await signIn(email, password);
         router.replace('/(tabs)');
       } catch (error) {
         Alert.alert('Login Failed', 'Please check your credentials and try again.');

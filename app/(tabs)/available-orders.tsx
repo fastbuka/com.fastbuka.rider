@@ -2,107 +2,48 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } fr
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useOrdersStore } from '@/store/ordersStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getRiderOrders } from '@/services/api';
+
+interface Order {
+  uuid: string;
+  vendor: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  delivery_address: string;
+  distance: number | null;
+  estimatedTime: number | null;
+  total_amount: number;
+}
 
 export default function AvailableOrders() {
   const setAvailableOrdersCount = useOrdersStore((state) => state.setAvailableOrdersCount);
-  
-  const waitingOrders = [
-    {
-      id: 1,
-      pickupLocation: 'Victoria Island, Lagos',
-      dropoffLocation: 'Ikoyi, Lagos',
-      amount: '₦700.00',
-      distance: '3.2km',
-      estimatedTime: '15 mins'
-    },
-    {
-      id: 2, 
-      pickupLocation: 'Surulere, Lagos',
-      dropoffLocation: 'Yaba, Lagos',
-      amount: '₦800.00',
-      distance: '4.5km',
-      estimatedTime: '20 mins'
-    },
-    {
-      id: 3,
-      pickupLocation: 'Lagos Island, Lagos',
-      dropoffLocation: 'Apapa, Lagos',
-      amount: '₦900.00',
-      distance: '5.1km',
-      estimatedTime: '25 mins'
-    },
-    {
-      id: 4,
-      pickupLocation: 'Obalende, Lagos',
-      dropoffLocation: 'Marina, Lagos',
-      amount: '₦700.00',
-      distance: '2.8km',
-      estimatedTime: '12 mins'
-    },
-    {
-      id: 5,
-      pickupLocation: 'Eko Atlantic, Lagos',
-      dropoffLocation: 'Victoria Garden City, Lagos',
-      amount: '₦1,000.00',
-      distance: '4.0km',
-      estimatedTime: '18 mins'
-    },
-    {
-      id: 6,
-      pickupLocation: 'Lagos Marina, Lagos',
-      dropoffLocation: 'Ebute Metta, Lagos',
-      amount: '₦850.00',
-      distance: '3.5km',
-      estimatedTime: '16 mins'
-    },
-    {
-      id: 7,
-      pickupLocation: 'Ikeja, Lagos',
-      dropoffLocation: 'Agege, Lagos',
-      amount: '₦750.00',
-      distance: '4.2km',
-      estimatedTime: '19 mins'
-    },
-    {
-      id: 8,
-      pickupLocation: 'Oshodi, Lagos',
-      dropoffLocation: 'Isolo, Lagos',
-      amount: '₦800.00',
-      distance: '3.8km',
-      estimatedTime: '17 mins'
-    },
-    {
-      id: 9,
-      pickupLocation: 'Mushin, Lagos',
-      dropoffLocation: 'Ojuelegba, Lagos',
-      amount: '₦900.00',
-      distance: '4.8km',
-      estimatedTime: '22 mins'
-    },
-    {
-      id: 10,
-      pickupLocation: 'Shomolu, Lagos',
-      dropoffLocation: 'Bariga, Lagos',
-      amount: '₦1,100.00',
-      distance: '5.5km',
-      estimatedTime: '26 mins'
-    },
-    {
-      id: 11,
-      pickupLocation: 'Ketu, Lagos',
-      dropoffLocation: 'Alapere, Lagos',
-      amount: '₦950.00',
-      distance: '4.9km',
-      estimatedTime: '23 mins'
-    },
-  ];
+  const [waitingOrders, setWaitingOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await getRiderOrders(6.426, 3.424); // Example coordinates
+        if (response && response.length > 0) {
+          setWaitingOrders(response);
+        } else {
+          console.error('Failed to fetch orders: Response data is undefined');
+        }
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   useEffect(() => {
     setAvailableOrdersCount(waitingOrders.length);
   }, [waitingOrders.length]);
 
-  const handleAcceptOrder = (orderId: number) => {
+  const handleAcceptOrder = (orderId: string) => {
     console.log('Accepted order:', orderId);
   };
 
@@ -116,31 +57,31 @@ export default function AvailableOrders() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.ordersContainer}>
           {waitingOrders.map(order => (
-            <View key={order.id} style={styles.orderCard}>
+            <View key={order.uuid} style={styles.orderCard}>
               <View style={styles.orderDetails}>
                 <View style={styles.locationContainer}>
                   <Ionicons name="location" size={20} color="#22c55e" />
                   <View>
-                    <Text style={styles.locationText}>Pickup: {order.pickupLocation}</Text>
-                    <Text style={styles.locationText}>Dropoff: {order.dropoffLocation}</Text>
+                    <Text style={styles.locationText}>Pickup: {order.vendor.address}</Text>
+                    <Text style={styles.locationText}>Dropoff: {order.delivery_address}</Text>
                   </View>
                 </View>
                 
                 <View style={styles.orderStats}>
                   <View style={styles.statItem}>
                     <Ionicons name="map" size={16} color="#666" />
-                    <Text style={styles.orderStat}>{order.distance}</Text>
+                    <Text style={styles.orderStat}>{order.distance ? `${order.distance.toFixed(2)} km` : 'N/A'}</Text>
                   </View>
                   <View style={styles.statItem}>
                     <Ionicons name="time" size={16} color="#666" />
-                    <Text style={styles.orderStat}>{order.estimatedTime}</Text>
+                    <Text style={styles.orderStat}>{order.estimatedTime ? `${order.estimatedTime.toFixed(2)} min` : 'N/A'}</Text>
                   </View>
-                  <Text style={styles.orderAmount}>{order.amount}</Text>
+                  <Text style={styles.orderAmount}>NGN{order.total_amount}</Text>
                 </View>
                 
                 <TouchableOpacity 
                   style={styles.acceptButton}
-                  onPress={() => handleAcceptOrder(order.id)}>
+                  onPress={() => handleAcceptOrder(order.uuid)}>
                   <Text style={styles.acceptButtonText}>Accept Order</Text>
                 </TouchableOpacity>
               </View>
@@ -158,19 +99,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
+    marginTop: 60,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#0C513F',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   subtitle: {
     fontSize: 14,
-    color: '#666',
+    color: '#fff',
     marginTop: 5,
   },
   scrollView: {

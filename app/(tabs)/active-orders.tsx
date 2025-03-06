@@ -4,6 +4,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Link } from 'expo-router';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
 
 export default function ActiveOrders() {
     // Mock data - replace with real data from API/backend
@@ -54,10 +56,13 @@ export default function ActiveOrders() {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.header}>
+                    <Text style={styles.headerText}>Active Deliveries</Text>
+                    <Text style={styles.subtitle}>Jobs you've accepted </Text>
+
+                </View>
             <ScrollView style={[styles.container, { paddingBottom: tabBarHeight + 16 }]}>
-                <ThemedView style={styles.header}>
-                    <ThemedText style={styles.headerText}>Active Deliveries</ThemedText>
-                </ThemedView>
+                
 
                 {activeOrders.map(order => (
                     <ThemedView key={order.id} style={styles.orderCard}>
@@ -136,11 +141,16 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
     },
     header: {
+        marginTop: 60,
         marginBottom: 20,
-        padding: 16,
-        borderRadius: 8,
+        padding: 20,
         backgroundColor: '#0C513F',
     },
+    subtitle: {
+        fontSize: 14,
+        color: '#fff',
+        marginTop: 5,
+      },
     headerText: {
         fontSize: 24,
         fontWeight: 'bold', 

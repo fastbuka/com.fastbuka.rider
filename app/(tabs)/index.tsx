@@ -2,16 +2,17 @@ import { Image, StyleSheet, Platform, View, Text, ScrollView, TouchableOpacity }
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '@/context/AuthContext';
+import { getRiderDashboard } from '@/services/api';
 
 export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week'>('today');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {  userFirstName, userLastName } = useAuth();
 
   // Mock user data - replace with real data
   const userData = {
     name: 'John Doe',
-    avatar: 'https://via.placeholder.com/100',
+    avatar: 'https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-180x180.png',
     location: 'Lagos CBD'
   };
   
@@ -39,25 +40,6 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (token) {
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error('Failed to fetch the auth token from storage', error);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  if (!isLoggedIn) {
-    return <Text>Please log in</Text>;
-  }
-
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -65,6 +47,20 @@ export default function Dashboard() {
     if (hour < 18) return 'Good Afternoon';
     return 'Good Evening';
   };
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const dashboardData = await getRiderDashboard();
+        console.log('Dashboard Data:', dashboardData);
+        // Handle the dashboard data as needed
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,7 +74,7 @@ export default function Dashboard() {
             />
             <View>
               <Text style={styles.greeting}>{getGreeting()},</Text>
-              <Text style={styles.userName}>{userData.name}</Text>
+              <Text style={styles.userName}>{userFirstName} {userLastName}</Text>
               <View style={styles.locationInfo}>
                 <Ionicons name="location" size={16} color="#666" />
                 <Text style={styles.locationText}>{userData.location}</Text>

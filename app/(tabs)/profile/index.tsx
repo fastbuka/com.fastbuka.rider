@@ -1,13 +1,14 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ProfileScreen() {
+  const { userFirstName, userLastName, email, signOut } = useAuth();
   const userProfile = {
     name: 'John Doe',
     email: 'john.doe@example.com',
-    avatar: 'https://via.placeholder.com/100',
+    avatar: 'https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG-180x180.png',
     stats: {
       orders: 24,
       reviews: 13,
@@ -48,9 +49,13 @@ export default function ProfileScreen() {
     },
   ] as const;
 
-  const handleLogout = () => {
-    useAuth.getState().setIsAuthenticated(false);
-    router.replace('/login');
+  const handleLogout = async() => {
+    try {
+      await signOut(); // Call signOut from context
+      router.replace('/login'); // Redirect to login page after signout
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (
@@ -60,8 +65,8 @@ export default function ProfileScreen() {
           source={{ uri: userProfile.avatar }}
           style={styles.avatar}
         />
-        <Text style={styles.name}>{userProfile.name}</Text>
-        <Text style={styles.email}>{userProfile.email}</Text>
+        <Text style={styles.name}>{userFirstName} {userLastName}</Text>
+        <Text style={styles.email}>{email}</Text>
       </View>
 
       <View style={styles.statsContainer}>
