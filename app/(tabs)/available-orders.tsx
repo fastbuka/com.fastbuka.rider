@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useOrdersStore } from '@/store/ordersStore';
 import { useEffect, useState } from 'react';
-import { getRiderOrders } from '@/services/api';
+import { getRiderOrders, acceptOrder } from '@/services/api';
 
 interface Order {
   uuid: string;
@@ -43,8 +43,15 @@ export default function AvailableOrders() {
     setAvailableOrdersCount(waitingOrders.length);
   }, [waitingOrders.length]);
 
-  const handleAcceptOrder = (orderId: string) => {
-    console.log('Accepted order:', orderId);
+  const handleAcceptOrder = async (orderId: string) => {
+    try {
+      await acceptOrder(orderId);
+      console.log('Order accepted:', orderId);
+      // Optionally, remove the accepted order from the waitingOrders state
+      setWaitingOrders(waitingOrders.filter(order => order.uuid !== orderId));
+    } catch (error) {
+      console.error('Failed to accept order:', error);
+    }
   };
 
   return (
