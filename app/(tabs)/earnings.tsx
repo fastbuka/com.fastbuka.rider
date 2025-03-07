@@ -2,7 +2,6 @@ import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Modal
 import { LineChart } from 'react-native-chart-kit';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
 interface BankAccount {
     id: string;
     bankName: string;
@@ -17,7 +16,6 @@ export default function Earnings() {
     const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(null);
     const [otpModalVisible, setOtpModalVisible] = useState(false);
     const [otp, setOtp] = useState('');
-    const { user } = useAuth();
 
     const bankAccounts = [
         
